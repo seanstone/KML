@@ -309,7 +309,7 @@ index fbc70762..0cd5eba2 100644
  	.align	5
  
 diff --git a/arch/arm/lib/uaccess_with_memcpy.c b/arch/arm/lib/uaccess_with_memcpy.c
-index 9b4ed172..19823bb4 100644
+index 9b4ed172..ec7fc1af 100644
 --- a/arch/arm/lib/uaccess_with_memcpy.c
 +++ b/arch/arm/lib/uaccess_with_memcpy.c
 @@ -90,7 +90,11 @@ __copy_to_user_memcpy(void __user *to, const void *from, unsigned long n)
@@ -325,15 +325,6 @@ index 9b4ed172..19823bb4 100644
  		memcpy((void *)to, from, n);
  		return 0;
  	}
-@@ -156,7 +160,7 @@ arm_copy_to_user(void __user *to, const void *from, unsigned long n)
- 	}
- 	return n;
- }
--	
-+
- static unsigned long noinline
- __clear_user_memset(void __user *addr, unsigned long n)
- {
 diff --git a/arch/arm/vfp/vfphw.S b/arch/arm/vfp/vfphw.S
 index f74a8f7e..69cdb2f8 100644
 --- a/arch/arm/vfp/vfphw.S
@@ -361,7 +352,7 @@ index f74a8f7e..69cdb2f8 100644
  	DBGSTR1	"fpexc %08x", r1
  	tst	r1, #FPEXC_EN
 diff --git a/drivers/pnp/pnpbios/bioscalls.c b/drivers/pnp/pnpbios/bioscalls.c
-index ba5cfc3d..4dba0c7b 100644
+index ba5cfc3d..c59d3b32 100644
 --- a/drivers/pnp/pnpbios/bioscalls.c
 +++ b/drivers/pnp/pnpbios/bioscalls.c
 @@ -87,6 +87,7 @@ static inline u16 call_pnp_bios(u16 func, u16 arg1, u16 arg2, u16 arg3,
@@ -388,26 +379,8 @@ index ba5cfc3d..4dba0c7b 100644
  	put_cpu();
  
  	/* If we get here and this is set then the PnP BIOS faulted on us. */
-@@ -280,7 +283,7 @@ int pnp_bios_dev_node_info(struct pnp_dev_node_info *data)
-  * get_dev_node() and set_dev_node() with boot=1 rather than with boot=0.
-  */
- 
--/* 
-+/*
-  * Call PnP BIOS with function 0x01, "get system device node"
-  * Input: *nodenum = desired node,
-  *        boot = whether to get nonvolatile boot (!=0)
-@@ -317,7 +320,7 @@ int pnp_bios_get_dev_node(u8 *nodenum, char boot, struct pnp_bios_node *data)
- 
- /*
-  * Call PnP BIOS with function 0x02, "set system device node"
-- * Input: *nodenum = desired node, 
-+ * Input: *nodenum = desired node,
-  *        boot = whether to set nonvolatile boot (!=0)
-  *               or volatile current (0) config
-  */
 diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-index c0e3f91e..9b5fde9b 100644
+index c0e3f91e..b8a2a50a 100644
 --- a/fs/binfmt_elf.c
 +++ b/fs/binfmt_elf.c
 @@ -9,6 +9,10 @@
@@ -434,15 +407,6 @@ index c0e3f91e..9b5fde9b 100644
  {
  	unsigned long p = bprm->p;
  	int argc = bprm->argc;
-@@ -231,7 +239,7 @@ create_elf_tables(struct linux_binprm *bprm, struct elfhdr *exec,
- 	} while (0)
- 
- #ifdef ARCH_DLINFO
--	/* 
-+	/*
- 	 * ARCH_DLINFO must come first so PPC can do its special alignment of
- 	 * AUXV.
- 	 * update AT_VECTOR_SIZE_ARCH if the number of NEW_AUX_ENT() in
 @@ -676,8 +684,45 @@ static unsigned long randomize_stack_top(unsigned long stack_top)
  #endif
  }
@@ -489,42 +453,6 @@ index c0e3f91e..9b5fde9b 100644
  	struct file *interpreter = NULL; /* to shut gcc up */
   	unsigned long load_addr = 0, load_bias = 0;
  	int load_addr_set = 0;
-@@ -705,7 +750,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 		retval = -ENOMEM;
- 		goto out_ret;
- 	}
--	
-+
- 	/* Get the exec-header */
- 	loc->elf_ex = *((struct elfhdr *)bprm->buf);
- 
-@@ -741,7 +786,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 			 * is an a.out format binary
- 			 */
- 			retval = -ENOEXEC;
--			if (elf_ppnt->p_filesz > PATH_MAX || 
-+			if (elf_ppnt->p_filesz > PATH_MAX ||
- 			    elf_ppnt->p_filesz < 2)
- 				goto out_free_ph;
- 
-@@ -874,7 +919,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 				 executable_stack);
- 	if (retval < 0)
- 		goto out_free_dentry;
--	
-+
- 	current->mm->start_stack = bprm->p;
- 
- 	/* Now we do a little grungy work by mmapping the ELF image into
-@@ -890,7 +935,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 
- 		if (unlikely (elf_brk > elf_bss)) {
- 			unsigned long nbyte;
--	            
-+
- 			/* There was a PT_LOAD segment with p_memsz > p_filesz
- 			   before this one. Map anonymous pages, if needed,
- 			   and clear the area.  */
 @@ -1104,8 +1149,15 @@ static int load_elf_binary(struct linux_binprm *bprm)
  		goto out;
  #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
@@ -558,71 +486,6 @@ index c0e3f91e..9b5fde9b 100644
  	retval = 0;
  out:
  	kfree(loc);
-@@ -1454,7 +1514,7 @@ static void fill_elf_note_phdr(struct elf_phdr *phdr, int sz, loff_t offset)
- 	return;
- }
- 
--static void fill_note(struct memelfnote *note, const char *name, int type, 
-+static void fill_note(struct memelfnote *note, const char *name, int type,
- 		unsigned int sz, void *data)
- {
- 	note->name = name;
-@@ -1507,7 +1567,7 @@ static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,
- {
- 	const struct cred *cred;
- 	unsigned int i, len;
--	
-+
- 	/* first copy the parameters from user space */
- 	memset(psinfo, 0, sizeof(struct elf_prpsinfo));
- 
-@@ -1541,7 +1601,7 @@ static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,
- 	SET_GID(psinfo->pr_gid, from_kgid_munged(cred->user_ns, cred->gid));
- 	rcu_read_unlock();
- 	strncpy(psinfo->pr_fname, p->comm, sizeof(psinfo->pr_fname));
--	
-+
- 	return 0;
- }
- 
-@@ -1936,8 +1996,8 @@ static int elf_dump_thread_status(long signr, struct elf_thread_status *t)
- 	t->num_notes = 0;
- 
- 	fill_prstatus(&t->prstatus, p, signr);
--	elf_core_copy_task_regs(p, &t->prstatus.pr_reg);	
--	
-+	elf_core_copy_task_regs(p, &t->prstatus.pr_reg);
-+
- 	fill_note(&t->notes[0], "CORE", NT_PRSTATUS, sizeof(t->prstatus),
- 		  &(t->prstatus));
- 	t->num_notes++;
-@@ -1958,7 +2018,7 @@ static int elf_dump_thread_status(long signr, struct elf_thread_status *t)
- 		t->num_notes++;
- 		sz += notesize(&t->notes[2]);
- 	}
--#endif	
-+#endif
- 	return sz;
- }
- 
-@@ -2201,7 +2261,7 @@ static int elf_core_dump(struct coredump_params *cprm)
- 
- 	/*
- 	 * We no longer stop all VM operations.
--	 * 
-+	 *
- 	 * This is because those proceses that could possibly change map_count
- 	 * or the mmap / vma pages are now blocked in do_exit on current
- 	 * finishing this core dump.
-@@ -2210,7 +2270,7 @@ static int elf_core_dump(struct coredump_params *cprm)
- 	 * the map_count or the pages allocated. So no possibility of crashing
- 	 * exists while dumping the mm->vm_next areas to the core file.
- 	 */
--  
-+
- 	/* alloc memory for large data structures: too large to be on stack */
- 	elf = kmalloc(sizeof(*elf), GFP_KERNEL);
- 	if (!elf)
 diff --git a/fs/compat_binfmt_elf.c b/fs/compat_binfmt_elf.c
 index 504b3c35..9c1cc61a 100644
 --- a/fs/compat_binfmt_elf.c
