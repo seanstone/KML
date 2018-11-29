@@ -20,13 +20,13 @@ Invoke sys_clock_gettime in KML by address:
 
 It is very inconvenient for this solution because the user program needs to modify this address whenever the kernel is updated.
 
-##vDSO
+## vDSO
 The vDSO, virtual dynamic shared object, is a small shared library that the kernel automatically maps into the address space of all user-space applications. User programs usually do not need to concern themselves with these details as the vDSO is most commonly called by the C library. This technique provides a good interface for the KML user program to access the kernel resource through symbols. When kernel is updated, what we need to do is rebuild the user program by relinking it with the new vDSO library.
 Known Issues:
  - Scheduling specific operations provided by Linux kernel such as schedule can not be invoked in KML user program, otherwise system will freeze or get into segmentation faults.
  - On AM572x, powered by Cortex A15 core, LPAE (i.e. CONFIG_ARM_LPAE) should be disabled.
 
-##Instructions:
+## Instructions:
 
 KML now is evaluated on AM572x and i.MX6Q SDB with Linux4.4.12. To enable it, get the kernel source with 4.4.12 version and patch it by the following patch files.
  - 0001-Integrate-KML.patch
