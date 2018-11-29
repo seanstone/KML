@@ -498,6 +498,23 @@ index 504b3c35..9c1cc61a 100644
 +#define INCLUDED_FOR_COMPAT
 +#endif
  #include "binfmt_elf.c"
+diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
+index a78186d8..8c7b1023 100644
+--- a/include/linux/syscalls.h
++++ b/include/linux/syscalls.h
+@@ -232,7 +232,12 @@ static inline void addr_limit_user_check(void)
+ 		return;
+ #endif
+ 
++#ifndef CONFIG_KERNEL_MODE_LINUX
+ 	if (CHECK_DATA_CORRUPTION(!segment_eq(get_fs(), USER_DS),
++#else
++	if (CHECK_DATA_CORRUPTION(!segment_eq(get_fs(), USER_DS)
++								&& !test_thread_flag(TIF_KU),
++#endif
+ 				  "Invalid address limit on user-mode return"))
+ 		force_sig(SIGKILL, current);
+ 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
 index 7cf4f6da..04e4b35a 100644
 --- a/init/do_mounts.c
